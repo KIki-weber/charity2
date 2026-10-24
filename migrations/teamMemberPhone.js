@@ -7,7 +7,10 @@ export const migrateTeamMemberPhone = async (sequelize) => {
   try {
     columns = await queryInterface.describeTable("team_members");
   } catch (error) {
-    if (error.original?.code === "ER_NO_SUCH_TABLE" || error.original?.code === "42S02") {
+    const missingTable = error.original?.code === "ER_NO_SUCH_TABLE"
+      || error.original?.code === "42S02"
+      || error.message?.startsWith('No description found for "team_members" table.');
+    if (missingTable) {
       return;
     }
 

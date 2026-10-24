@@ -42,9 +42,7 @@ test("team member phone migration skips a table that does not exist yet", async 
   const sequelize = {
     getQueryInterface: () => ({
       describeTable: async () => {
-        const error = new Error("table not found");
-        error.original = { code: "ER_NO_SUCH_TABLE" };
-        throw error;
+        throw new Error('No description found for "team_members" table. Check the table name and schema; remember, they _are_ case sensitive.');
       },
       addColumn: async () => {
         addColumnCalled = true;
