@@ -147,7 +147,10 @@ export const migrateMediaSchema = async (sequelize) => {
     try {
       columns = await queryInterface.describeTable(migration.table);
     } catch (error) {
-      if (error.original?.code === "ER_NO_SUCH_TABLE" || error.original?.code === "42S02") {
+      const missingTable = error.original?.code === "ER_NO_SUCH_TABLE"
+        || error.original?.code === "42S02"
+        || error.message?.startsWith(`No description found for "${migration.table}" table.`);
+      if (missingTable) {
         continue;
       }
       throw error;

@@ -47,9 +47,7 @@ test('media migration preserves existing media and clears empty values before JS
       return {
         async describeTable(table) {
           if (!tables[table]) {
-            const error = new Error(`Table '${table}' doesn't exist`);
-            error.original = { code: 'ER_NO_SUCH_TABLE' };
-            throw error;
+            throw new Error(`No description found for "${table}" table. Check the table name and schema; remember, they _are_ case sensitive.`);
           }
           return tables[table].columns;
         },
