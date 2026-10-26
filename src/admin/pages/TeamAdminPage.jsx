@@ -50,7 +50,7 @@ export default function TeamAdminPage({ items = [], formData, setFormData, onSav
             value={formData.phone || ''}
             onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
             placeholder="+1 555 123 4567"
-            pattern="\+[1-9][0-9\s().-]{1,24}"
+            pattern="\+[1-9](?:[0-9]|\s|\(|\)|\.|-){1,24}"
             title="Enter the phone number with its country calling code, such as +1 555 123 4567."
           />
         </label>
