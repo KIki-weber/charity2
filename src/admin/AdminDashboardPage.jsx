@@ -244,7 +244,7 @@ export default function AdminDashboardPage() {
       }
 
       if (value instanceof File) {
-        formData.append(key, typeof value === 'object' ? JSON.stringify(value) : value);
+        formData.append(key, value);
         return;
       }
 
