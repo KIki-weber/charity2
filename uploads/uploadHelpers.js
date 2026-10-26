@@ -44,6 +44,40 @@ const normalizeUploadValues = (value) => {
   return [];
 };
 
+export const normalizeUploadValue = (value) => {
+  if (value === null || value === undefined) {
+    return null;
+  }
+
+  if (typeof value === 'string') {
+    const uploadValue = value.trim();
+    if (!uploadValue) {
+      return null;
+    }
+
+    try {
+      const parsedValue = JSON.parse(uploadValue);
+      if (parsedValue !== uploadValue) {
+        return normalizeUploadValue(parsedValue);
+      }
+    } catch {
+      return uploadValue;
+    }
+
+    return uploadValue;
+  }
+
+  if (value && typeof value === 'object' && !Array.isArray(value)) {
+    for (const key of ['url', 'path', 'src', 'filename']) {
+      if (value[key] !== undefined) {
+        return normalizeUploadValue(value[key]);
+      }
+    }
+  }
+
+  return undefined;
+};
+
 export const getUploadUrl = (value = '') => {
   if (!value) {
     return '';

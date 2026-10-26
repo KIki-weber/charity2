@@ -1,7 +1,25 @@
 import { TeamMember } from "../models/index.js";
+import { normalizeUploadValue } from "../uploads/uploadHelpers.js";
 
 const normalizePhone = (value) => String(value).trim().replace(/[\s().-]/g, "");
 const internationalPhonePattern = /^\+[1-9]\d{1,14}$/;
+
+const validatePhoto = (req, res) => {
+  if (!Object.hasOwn(req.body, "photo")) {
+    return true;
+  }
+
+  const photo = normalizeUploadValue(req.body.photo);
+  if (photo === undefined) {
+    res.status(400).json({
+      message: "Photo must be a URL, file path, or an object containing one.",
+    });
+    return false;
+  }
+
+  req.body.photo = photo;
+  return true;
+};
 
 export const validateTeamMemberPhone = (req, res, next) => {
   if (req.body.phone === undefined || req.body.phone === null) {
@@ -51,9 +69,14 @@ export const getTeamMemberById = async (req, res) => {
 };
 
 export const createTeamMember = async (req, res) => {
+  if (!validatePhoto(req, res)) {
+    return;
+  }
+
   try {
     const teamMember = await TeamMember.create({
       ...req.body,
+      photo: req.body.photo ?? null,
       phone: req.body.phone ?? null,
     });
     return res.status(201).json(teamMember);
@@ -66,6 +89,10 @@ export const createTeamMember = async (req, res) => {
 };
 
 export const updateTeamMember = async (req, res) => {
+  if (!validatePhoto(req, res)) {
+    return;
+  }
+
   try {
     const teamMember = await TeamMember.findByPk(req.params.id);
 

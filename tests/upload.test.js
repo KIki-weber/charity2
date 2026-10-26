@@ -1,7 +1,12 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 
-import { attachUploadedFiles, buildUploadPayload, getUploadUrl } from '../uploads/uploadHelpers.js';
+import {
+  attachUploadedFiles,
+  buildUploadPayload,
+  getUploadUrl,
+  normalizeUploadValue,
+} from '../uploads/uploadHelpers.js';
 import { getUploadFieldLimit } from '../uploads/uploadMiddleware.js';
 
 test('buildUploadPayload returns a normalized public URL for a single file', () => {
@@ -19,6 +24,22 @@ test('getUploadUrl works with a complete public URL input', () => {
 
 test('getUploadUrl normalizes legacy doubled slashes before uploads', () => {
   assert.equal(getUploadUrl('//uploads/team-members/photo.png'), '/uploads/team-members/photo.png');
+});
+
+test('normalizeUploadValue extracts a single URL or path from upload values', () => {
+  assert.equal(normalizeUploadValue('/uploads/team-members/member.jpg'), '/uploads/team-members/member.jpg');
+  assert.equal(
+    normalizeUploadValue({ url: '/uploads/team-members/member.jpg' }),
+    '/uploads/team-members/member.jpg'
+  );
+  assert.equal(
+    normalizeUploadValue('{"path":"/uploads/team-members/member.jpg"}'),
+    '/uploads/team-members/member.jpg'
+  );
+  assert.equal(normalizeUploadValue(''), null);
+  assert.equal(normalizeUploadValue(null), null);
+  assert.equal(normalizeUploadValue({}), undefined);
+  assert.equal(normalizeUploadValue([]), undefined);
 });
 
 test('buildUploadPayload preserves a model-specific upload folder', () => {
